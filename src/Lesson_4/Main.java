@@ -5,19 +5,18 @@ import java.util.Scanner;
 
 public class Main {
 
-    static char[][] field;
     static final int SIZE = 3;
     static final int DOTS_TO_WIN = 3;
     static final char DOT_EMPTY = '•';
     static final char PLAYER_DOT = 'X';
     static final char AI_DOT = 'O';
+    static char[][] field = new char[SIZE][SIZE];
 
     static Scanner scanner = new Scanner(System.in);
     static Random random = new Random();
 
     //Инициализация игрового поля
     public static void initField() {
-        field = new char[SIZE][SIZE];
         for (int i = 0; i < SIZE; i++) {
             for (int j = 0; j < SIZE; j++) {
                 field[i][j] = DOT_EMPTY;
@@ -92,34 +91,77 @@ public class Main {
 
     //Определение победителя
     private static boolean checkWin(char sym) {
-        if (field[0][0] == sym && field[0][1] == sym && field[0][2] == sym) {
-            return true;
-        }
-        if (field[1][0] == sym && field[1][1] == sym && field[1][2] == sym) {
-            return true;
-        }
-        if (field[2][0] == sym && field[2][1] == sym && field[2][2] == sym) {
-            return true;
-        }
-
-        if (field[0][0] == sym && field[1][0] == sym && field[2][0] == sym) {
-            return true;
-        }
-        if (field[0][1] == sym && field[1][1] == sym && field[2][1] == sym) {
-            return true;
-        }
-        if (field[0][2] == sym && field[1][2] == sym && field[2][2] == sym) {
-            return true;
+        //для строк
+        for (int i = 0; i < SIZE; i++) {
+            int countRow = 0;
+            for (int j = 0; j < SIZE; j++) {
+                if (field[i][j] == sym) {
+                    countRow++;
+                } else {
+                    if (j + 1 < SIZE && field[i][j + 1] != sym && countRow != DOTS_TO_WIN) {
+                        countRow = 0;
+                    }
+                }
+            }
+            if (countRow >= DOTS_TO_WIN) {
+                return true;
+            }
         }
 
-        if (field[0][0] == sym && field[1][1] == sym && field[2][2] == sym) {
-            return true;
+        //для столбцов
+        for (int i = 0; i < SIZE; i++) {
+            int countCol = 0;
+            for (int j = 0; j < SIZE; j++) {
+                if (field[j][i] == sym) {
+                    countCol++;
+                } else {
+                    if (j + 1 < SIZE && field[j + 1][i] != sym && countCol != DOTS_TO_WIN) {
+                        countCol = 0;
+                    }
+                }
+            }
+            if (countCol >= DOTS_TO_WIN) {
+                return true;
+            }
         }
-        if (field[2][0] == sym && field[1][1] == sym && field[0][2] == sym) {
-            return true;
+
+        //для диагоналей
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                int countUp = 0;
+                int countDown = 0;
+
+                for (int k = i, l = j; k < SIZE && l < SIZE; k++, l++) {
+                    if (field[k][l] == sym) {
+                        countDown++;
+                    } else {
+                        if (k + 1 < SIZE && l + 1 < SIZE && field[k+1][l+1] != sym && countDown != DOTS_TO_WIN) {
+                            countDown = 0;
+                        }
+                    }
+                }
+
+                for (int k = i, l = j; k >= 0 && l < SIZE ; k--, l++) {
+                    if (field[k][l] == sym) {
+                        countUp++;
+                    } else {
+                        if (k - 1 >= 0 && l + 1 < SIZE && field[k-1][l+1] != sym && countUp != DOTS_TO_WIN) {
+                            countUp = 0;
+                        }
+                    }
+                }
+
+                if (countDown >= DOTS_TO_WIN || countUp >= DOTS_TO_WIN) {
+                    return true;
+                }
+            }
         }
 
         return false;
+
+
+
+
     }
 
 
