@@ -5,8 +5,8 @@ import java.util.Scanner;
 
 public class Main {
 
-    static final int SIZE = 3;
-    static final int DOTS_TO_WIN = 3;
+    static final int SIZE = 5;
+    static final int DOTS_TO_WIN = 4;
     static final char DOT_EMPTY = '•';
     static final char PLAYER_DOT = 'X';
     static final char AI_DOT = 'O';
@@ -45,14 +45,14 @@ public class Main {
     }
 
     //Метод для установки символа
-    private static void setSym(int y, int x, char sym) {
-        field[y][x] = sym;
+    private static void setSym(int x, int y, char sym) {
+        field[x][y] = sym;
     }
 
     //Проверка валидности ячейки
     public static boolean isCellValid(int x, int y) {
         if (x < 0 || x >= SIZE || y < 0 || y >= SIZE) return false;
-        if (field[y][x] == DOT_EMPTY) return true;
+        if (field[x][y] == DOT_EMPTY) return true;
         return false;
     }
 
@@ -64,17 +64,73 @@ public class Main {
             x = scanner.nextInt() - 1;
             y = scanner.nextInt() - 1;
         } while (!isCellValid(x,y));
-        setSym(y, x, PLAYER_DOT);
+        setSym(x, y, PLAYER_DOT);
     }
 
     //Ход компьютера
     private static void aiTurn() {
-        int x, y;
-        do {
-            x = random.nextInt(SIZE);
-            y = random.nextInt(SIZE);
-        } while (!isCellValid(x,y));
-        setSym(y, x, AI_DOT);
+
+        int x = 0,y = 0;
+
+        for (int i = 0; i < SIZE; i++) {
+            for (int j = 0; j < SIZE; j++) {
+                if (field[i][j] == PLAYER_DOT) {
+                    switch (onDiag(i,j)){
+                        case 'l': {
+                            if (i == 0) {
+                                if (isCellValid(i+1,j+1)){
+                                    x = i + 1;
+                                    y = j + 1;
+                                }
+                            } else {
+                                if (isCellValid(i - 1, j - 1)) {
+                                    x = i -1;
+                                    y = j -1;
+                                }
+                            }
+                            break;
+                        }
+
+                        case 'r': {
+                            if (i == 0) {
+                                if (isCellValid(i+1,SIZE-1-j)) {
+                                    x = i +1;
+                                    y = SIZE - 1 - j;
+
+                                } else {
+                                    if (isCellValid(SIZE-1-i,j+1)) {
+                                        x = SIZE - 1 - i;
+                                        y = j + 1;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+
+                        case '0': {
+                            for (int k = 0; k < SIZE - j; k++) {
+                                for (int l = 0; l < SIZE - i; l++) {
+                                    if (field[k][j] == PLAYER_DOT && isCellValid(k+1,j)) {
+                                        x = k+1;
+                                        y = j;
+                                    }
+                                    if (field[i][k] == PLAYER_DOT && isCellValid(i,k+1)) {
+                                        x = i;
+                                        y = k + 1;
+                                    }
+
+                                }
+                            }
+
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        setSym(x,y,AI_DOT);
+
     }
 
     //Определение ничьей
@@ -97,11 +153,11 @@ public class Main {
             for (int j = 0; j < SIZE; j++) {
                 if (field[i][j] == sym) {
                     countRow++;
-                } else {
-                    if (j + 1 < SIZE && field[i][j + 1] != sym && countRow != DOTS_TO_WIN) {
-                        countRow = 0;
-                    }
                 }
+                if (j + 1 < SIZE && field[i][j + 1] != sym && countRow != DOTS_TO_WIN) {
+                    countRow = 0;
+                }
+
             }
             if (countRow >= DOTS_TO_WIN) {
                 return true;
@@ -114,11 +170,11 @@ public class Main {
             for (int j = 0; j < SIZE; j++) {
                 if (field[j][i] == sym) {
                     countCol++;
-                } else {
-                    if (j + 1 < SIZE && field[j + 1][i] != sym && countCol != DOTS_TO_WIN) {
-                        countCol = 0;
-                    }
                 }
+                if (j + 1 < SIZE && field[j + 1][i] != sym && countCol != DOTS_TO_WIN) {
+                    countCol = 0;
+                }
+
             }
             if (countCol >= DOTS_TO_WIN) {
                 return true;
@@ -134,21 +190,21 @@ public class Main {
                 for (int k = i, l = j; k < SIZE && l < SIZE; k++, l++) {
                     if (field[k][l] == sym) {
                         countDown++;
-                    } else {
-                        if (k + 1 < SIZE && l + 1 < SIZE && field[k+1][l+1] != sym && countDown != DOTS_TO_WIN) {
-                            countDown = 0;
-                        }
                     }
+                    if (k + 1 < SIZE && l + 1 < SIZE && field[k+1][l+1] != sym && countDown != DOTS_TO_WIN) {
+                        countDown = 0;
+                    }
+
                 }
 
                 for (int k = i, l = j; k >= 0 && l < SIZE ; k--, l++) {
                     if (field[k][l] == sym) {
                         countUp++;
-                    } else {
-                        if (k - 1 >= 0 && l + 1 < SIZE && field[k-1][l+1] != sym && countUp != DOTS_TO_WIN) {
-                            countUp = 0;
-                        }
                     }
+                    if (k - 1 >= 0 && l + 1 < SIZE && field[k-1][l+1] != sym && countUp != DOTS_TO_WIN) {
+                        countUp = 0;
+                    }
+
                 }
 
                 if (countDown >= DOTS_TO_WIN || countUp >= DOTS_TO_WIN) {
@@ -158,11 +214,19 @@ public class Main {
         }
 
         return false;
-
-
-
-
     }
+
+    //Определить левая или правая диагональ
+    private static char onDiag(int i, int j) {
+        if (i == j) {
+            return 'l';
+        } else if (i + j == SIZE - 1){
+            return 'r';
+        } else {
+            return '0';
+        }
+    }
+
 
 
 
