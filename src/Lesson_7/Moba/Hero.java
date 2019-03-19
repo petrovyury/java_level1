@@ -1,4 +1,35 @@
 package Lesson_7.Moba;
 
-public class Hero {
+public abstract class Hero {
+    protected int health;
+    protected String type;
+    protected int damage;
+
+    public Hero(int health, String type, int damage) {
+        this.health = health;
+        this.type = type;
+        this.damage = damage;
+    }
+
+    abstract void healing(Hero h);
+
+    void hit(Hero h) {
+        if(h != this) {
+            h.causeDamage(damage);
+        }
+    }
+
+    void causeDamage(int damage) {
+        health -= damage;
+    }
+
+    int healthVolume (int health) {
+        if (health < 0) health = 0;
+
+        return health;
+    }
+
+    void info() {
+        System.out.println(health + " " + type + " " + damage);
+    }
 }
