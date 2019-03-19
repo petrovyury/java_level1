@@ -6,88 +6,73 @@ public class Main {
 
     static Scanner sc = new Scanner(System.in);
 
-    protected static int heroesInTeam;
-    private static int heroType;
-    private static int teamHealth;
+    static final int HEROES_IN_TEAM = 3;
+    static int heroType;
+    static Hero[] team1 = new Hero[HEROES_IN_TEAM];
+    static Hero[] team2 = new Hero[HEROES_IN_TEAM];
 
-    private static Hero[] team1 = new Hero[heroesInTeam];
-    private static Hero[] team2 = new Hero[heroesInTeam];
 
-    private static void teamBuild () {
-        System.out.print("Введите количество игроков в каждой команде ");
-        heroesInTeam = sc.nextInt();
 
-        System.out.println();
+    static String setHeroType (int i) {
+        String s = new String();
+        System.out.println("Игрок №" + (i + 1) + "\n1. Воин\n2. Убийца\n3. Лекарь");
+        heroType = sc.nextInt();
+        while (heroType < 1 || heroType > 3) {
+            System.out.println("Вы ввели неверное значение. Повторите ввод.");
+            heroType = sc.nextInt();
+        }
+        switch (heroType) {
+            case 1: {
+                s = "Warrior";
+                break;
+            }
+            case 2: {
+                s = "Assassin";
+                break;
+            }
+            case 3: {
+                s = "Healer";
+                break;
+            }
+        }
+        return s;
+    }
+
+
+
+    static void teamBuild () {
+
+
 
         System.out.println("Определите состав команды №1");
-        for (int i = 0; i < heroesInTeam; i++) {
-            System.out.println("Игрок №" + (i+1) + "\n1. Воин\n2. Убийца\n3. Лекарь");
-            do {
-                heroType = sc.nextInt();
-                if (heroType < 1 || heroType > 3) {
-                    System.out.println("Вы ввели неверное значение. Повторите ввод.");
-                } else
-                    break;
-            } while (true);
-
-
-            switch (heroType) {
-                case 1: {
-                    team1[i] = new Warrior();
-                    break;
-                }
-                case 2: {
-                    team1[i] = new Assassin();
-                    break;
-                }
-                case 3: {
-                    team1[i] = new Healer();
-                    break;
-                }
-            }
+        for (int i = 0; i < HEROES_IN_TEAM; i++) {
+            team1[i].type = setHeroType(i);
         }
 
         System.out.println("Определите состав команды №2");
-        for (int i = 0; i < heroesInTeam; i++) {
-            System.out.println("Игрок №" + (i+1) + "\n1. Воин\n2. Убийца\n3. Лекарь");
-            do {
-                heroType = sc.nextInt();
-                if (heroType < 1 || heroType > 3) {
-                    System.out.println("Вы ввели неверное значение. Повторите ввод.");
-                } else
-                    break;
-            } while (true);
-
-            switch (heroType) {
-                case 1: {
-                    team2[i] = new Warrior();
-                    break;
-                }
-                case 2: {
-                    team2[i] = new Assassin();
-                    break;
-                }
-                case 3: {
-                    team2[i] = new Healer();
-                    break;
-                }
-            }
+        for (int i = 0; i < HEROES_IN_TEAM; i++) {
+            team2[i].type = setHeroType(i);
         }
 
-    }
-
-    private static void fight () {
-
-
-
-    }
-
-
-    public static void main(String[] args) {
-        teamBuild();
         sc.close();
     }
 
+    static void teamInfo() {
+        for (int i = 0; i < HEROES_IN_TEAM; i++) {
+            System.out.print("Команда №1: " + team1[i].type);
+        }
+        System.out.println();
+        for (int i = 0; i < HEROES_IN_TEAM; i++) {
+            System.out.print("Команда №2: " + team2[i].type);
+        }
+    }
+
+    public static void main(String[] args) {
+
+        teamBuild();
+        teamInfo();
+
+    }
 }
 
 
