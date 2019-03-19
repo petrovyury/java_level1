@@ -23,11 +23,6 @@ public abstract class Hero {
         health -= damage;
     }
 
-    int healthVolume (int health) {
-        if (health < 0) health = 0;
-
-        return health;
-    }
 
     void info() {
         System.out.println(health + " " + type + " " + damage);
